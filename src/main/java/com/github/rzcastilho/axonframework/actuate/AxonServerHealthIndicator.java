@@ -1,6 +1,6 @@
 package com.github.rzcastilho.axonframework.actuate;
 
-import org.axonframework.spring.config.AxonConfiguration;
+import org.axonframework.axonserver.connector.AxonServerConnectionManager;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.util.Assert;
@@ -13,17 +13,17 @@ import org.springframework.util.Assert;
  */
 public class AxonServerHealthIndicator extends AbstractHealthIndicator {
 
-    private final AxonConfiguration configuration;
+    private final AxonServerConnectionManager connection;
 
-    public AxonServerHealthIndicator(AxonConfiguration configuration) {
+    public AxonServerHealthIndicator(AxonServerConnectionManager configuration) {
         super("AxonServer health check failed");
         Assert.notNull(configuration, "AxonConfiguration must not be null");
-        this.configuration = configuration;
+        this.connection = configuration;
     }
 
     @Override
     protected void doHealthCheck(Builder builder) throws Exception {
-        if (configuration.isRunning()) {
+        if (connection.isConnected(connection.getDefaultContext())) {
             builder.up();
         } else {
             builder.down();
